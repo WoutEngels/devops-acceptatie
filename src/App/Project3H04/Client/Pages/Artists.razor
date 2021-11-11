@@ -1,0 +1,70 @@
+﻿@page "/artists"
+@inject HttpClient httpClient
+<body>
+
+
+
+    <div class="container">
+        <p class="black-style">Artists</p>
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                <input type="search" placeholder="search artist..." value="@artistSearch" @onchange="SearchArtist" />
+            </div>
+        </div>
+        <div class="row">
+            @if (kunstenaars != null)
+            {
+                @foreach (var kunst in kunstenaars)
+                {
+
+
+                    <div class="col-lg-4 col-md-6">
+                        <a href="artists/@kunst.GebruikerId" style="text-decoration:none">
+                            <div>
+                                <img src="/images/@kunst.Fotopad" alt="" style="width:300px; height:auto " />
+                                <div class="artwork-text">
+                                    <p>@kunst.Gebruikersnaam</p>
+                                    <p>@kunst.Email</p>
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+
+
+                }
+
+            }
+            else
+            {
+                <p>Loading ...</p>
+            }
+
+        </div>
+    </div>
+
+</body>
+
+@code {
+
+    private List<Kunstenaar_DTO> kunstenaars;
+    //private List<Kunstenaar_DTO> kunstenaarsCopy;
+    private string artistSearch;
+    protected override async Task OnInitializedAsync()
+    {
+        kunstenaars = await httpClient.GetFromJsonAsync<List<Kunstenaar_DTO>>("api/Kunstenaar");
+        //kunstenaarsCopy = kunstenaars;
+    }
+
+    private async Task SearchArtist(ChangeEventArgs args)
+    {
+        artistSearch = args.Value.ToString();
+        if (string.IsNullOrEmpty(artistSearch))
+            kunstenaars = await httpClient.GetFromJsonAsync<List<Kunstenaar_DTO>>("api/Kunstenaar");
+        else
+            kunstenaars = await httpClient.GetFromJsonAsync<List<Kunstenaar_DTO>>($"api/Kunstenaar?term={artistSearch}");
+    }
+
+}
+

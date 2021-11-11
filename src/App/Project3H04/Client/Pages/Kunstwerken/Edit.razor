@@ -1,0 +1,23 @@
+﻿@page "/artworks/edit/{id:int}"
+@inject HttpClient httpClient
+<h3>Edit Artwork</h3>
+
+@if (_kunstwerk != null)
+{
+    <EditArtwork Model="@_kunstwerk" />
+}
+else
+{
+    <!--<LoadingSpinner/>-->
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Kunstwerk_DTO.Edit _kunstwerk;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Kunstwerk_DTO.Detail kunstwerkDetail = await httpClient.GetFromJsonAsync<Kunstwerk_DTO.Detail>($"api/Kunstwerk/{Id}");
+        _kunstwerk = new Kunstwerk_DTO.Edit(kunstwerkDetail);
+    }
+}
